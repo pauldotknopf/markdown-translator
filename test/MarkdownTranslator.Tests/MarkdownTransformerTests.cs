@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Markdig;
 using MarkdownTranslator.Impl;
+using Moq;
 using Xunit;
 
 namespace MarkdownTranslator.Tests
@@ -48,7 +49,37 @@ namespace MarkdownTranslator.Tests
         [Fact]
         public void Can_translate_cells_in_pipe_table()
         {
+            var moc = new Mock<FuncMoq>(MockBehavior.Strict);
+            moc.Setup(x => x.Translate("test*header* ")).Returns("test*header* ");
+            moc.Setup(x => x.Translate(" another~header~")).Returns("another~header~");
+            moc.Setup(x => x.Translate("0")).Returns("0");
+            moc.Setup(x => x.Translate("1")).Returns("1");
+
+            var markdown = new StringBuilder();
+            markdown.AppendLine("test*header* | another~header~");
+            markdown.AppendLine("-|-");
+            markdown.AppendLine("0|1");
+
+            Console.WriteLine(Helpers.GetMarkdownTree(markdown.ToString(), _markdownPipeline));
             
+            var result = _markdownTransformer.TransformMarkdown(markdown.ToString(),
+                _markdownPipeline,
+                value => moc.Object.Translate(value));
+            
+            moc.Verify(x => x.Translate("test*header* "), Times.Exactly(1));
+            moc.Verify(x => x.Translate(" another~header~"), Times.Exactly(1));
+            moc.Verify(x => x.Translate("0"), Times.Exactly(1));
+            moc.Verify(x => x.Translate("1"), Times.Exactly(1));
+            
+            Assert.Equal("", result);
+        }
+
+        public class FuncMoq
+        {
+            public virtual string Translate(string input)
+            {
+                return input;
+            }
         }
     }
 }
