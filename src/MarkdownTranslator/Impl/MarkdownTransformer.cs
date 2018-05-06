@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Markdig;
 using Markdig.Renderers;
@@ -16,6 +17,8 @@ namespace MarkdownTranslator.Impl
                 var renderer = new ReplacementRenderer(writer, input, func);
                 var document = Markdown.Parse(input, pipeline);
                 renderer.Render(document);
+                // Flush any remaining markdown content.
+                renderer.Writer.Write(renderer.TakeNext(renderer.OriginalMarkdown.Length - renderer.LastWrittenIndex));
                 return writer.ToString();
             }
         }
@@ -31,9 +34,22 @@ namespace MarkdownTranslator.Impl
                 ObjectRenderers.Add(new LiteralInlineRenderer());
                 ObjectRenderers.Add(new LeafInlineRenderer());
             }
-            
-            string OriginalMarkdown { get; }
 
+            // ReSharper disable ArrangeTypeMemberModifiers
+            // ReSharper disable InconsistentNaming
+            public readonly string OriginalMarkdown;
+            public int LastWrittenIndex = 0;
+            // ReSharper restore InconsistentNaming
+            // ReSharper restore ArrangeTypeMemberModifiers
+
+            public string TakeNext(int length)
+            {
+                if (length == 0) return null;
+                var result = OriginalMarkdown.Substring(LastWrittenIndex, length);
+                LastWrittenIndex += length;
+                return result;
+            }
+            
             class ContainerBlockRenderer : MarkdownObjectRenderer<ReplacementRenderer, ContainerBlock>
             {
                 protected override void Write(ReplacementRenderer renderer, ContainerBlock obj)
@@ -53,10 +69,16 @@ namespace MarkdownTranslator.Impl
                 
                 protected override void Write(ReplacementRenderer renderer, ContainerInline obj)
                 {
-                    var start = obj.FirstChild.Span.Start;
-                    var length = obj.LastChild.Span.End + 1 - start;
-                    var originalMarkdown = renderer.OriginalMarkdown.Substring(start, length);
+                    var startIndex = obj.FirstChild.Span.Start;
+                    
+                    // Make sure we flush all previous markdown before rendering this inline entry.
+                    renderer.Write(renderer.TakeNext(startIndex - renderer.LastWrittenIndex));
+                    
+                    Debug.Assert(startIndex == renderer.LastWrittenIndex);
+
+                    var originalMarkdown = renderer.TakeNext(obj.LastChild.Span.End + 1 - startIndex);
                     var newMarkdown = _func(originalMarkdown);
+                    
                     renderer.Write(newMarkdown);
                 }
             }

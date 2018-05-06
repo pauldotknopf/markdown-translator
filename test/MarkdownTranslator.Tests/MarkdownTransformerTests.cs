@@ -18,12 +18,25 @@ namespace MarkdownTranslator.Tests
             _markdownTransformer = new MarkdownTransformer();
             _markdownPipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
         }
-        
+
         [Fact]
         public void Can_transform_paragraph()
         {
             var markdown = new StringBuilder();
             markdown.AppendLine("This *is* a ~~test~~ paragraph.");
+
+            var result = _markdownTransformer.TransformMarkdown(markdown.ToString(),
+                _markdownPipeline,
+                value => value.Replace("t", "tt").Replace("a", "aa"));
+            
+            Assert.Equal("This *is* aa ~~ttestt~~ paaraagraaph.\n", result);
+        }
+        
+        [Fact]
+        public void Can_transform_without_trailing_newline()
+        {
+            var markdown = new StringBuilder();
+            markdown.Append("This *is* a ~~test~~ paragraph.");
 
             var result = _markdownTransformer.TransformMarkdown(markdown.ToString(),
                 _markdownPipeline,
@@ -43,35 +56,57 @@ namespace MarkdownTranslator.Tests
                 _markdownPipeline,
                 value => value.Replace("t", "tt").Replace("a", "aa"));
             
-            Assert.Equal("This *is* aa ~~ttestt~~ paaraagraaph.\nAnd aa new line.", result);
+            Assert.Equal("This *is* aa ~~ttestt~~ paaraagraaph.\nAnd aa new line.\n", result);
+        }
+
+        [Fact]
+        public void Can_transform_multiple_paragraphs()
+        {
+            var moc = new Mock<FuncMoq>(MockBehavior.Strict);
+            moc.Setup(x => x.Translate("First paragraph.")).Returns("First paragraph.");
+            moc.Setup(x => x.Translate("Next paragraph.")).Returns("Next paragraph.");
+            moc.Setup(x => x.Translate("0")).Returns("0");
+            moc.Setup(x => x.Translate("1")).Returns("1");
+
+            var markdown = new StringBuilder();
+            markdown.AppendLine("First paragraph.");
+            markdown.AppendLine("");
+            markdown.AppendLine("Next paragraph.");
+
+            var result = _markdownTransformer.TransformMarkdown(markdown.ToString(),
+                _markdownPipeline,
+                value => moc.Object.Translate(value));
+            
+            moc.Verify(x => x.Translate("First paragraph."), Times.Exactly(1));
+            moc.Verify(x => x.Translate("Next paragraph."), Times.Exactly(1));
+            
+            Assert.Equal(markdown.ToString(), result);
         }
 
         [Fact]
         public void Can_translate_cells_in_pipe_table()
         {
             var moc = new Mock<FuncMoq>(MockBehavior.Strict);
-            moc.Setup(x => x.Translate("test*header* ")).Returns("test*header* ");
-            moc.Setup(x => x.Translate(" another~header~")).Returns("another~header~");
+            moc.Setup(x => x.Translate("A ")).Returns("A ");
+            moc.Setup(x => x.Translate(" B")).Returns(" B");
             moc.Setup(x => x.Translate("0")).Returns("0");
             moc.Setup(x => x.Translate("1")).Returns("1");
 
             var markdown = new StringBuilder();
-            markdown.AppendLine("test*header* | another~header~");
+            markdown.AppendLine("A | B");
             markdown.AppendLine("-|-");
             markdown.AppendLine("0|1");
 
-            Console.WriteLine(Helpers.GetMarkdownTree(markdown.ToString(), _markdownPipeline));
-            
             var result = _markdownTransformer.TransformMarkdown(markdown.ToString(),
                 _markdownPipeline,
                 value => moc.Object.Translate(value));
             
-            moc.Verify(x => x.Translate("test*header* "), Times.Exactly(1));
-            moc.Verify(x => x.Translate(" another~header~"), Times.Exactly(1));
+            moc.Verify(x => x.Translate("A "), Times.Exactly(1));
+            moc.Verify(x => x.Translate(" B"), Times.Exactly(1));
             moc.Verify(x => x.Translate("0"), Times.Exactly(1));
             moc.Verify(x => x.Translate("1"), Times.Exactly(1));
             
-            Assert.Equal("", result);
+            Assert.Equal(markdown.ToString(), result);
         }
 
         public class FuncMoq

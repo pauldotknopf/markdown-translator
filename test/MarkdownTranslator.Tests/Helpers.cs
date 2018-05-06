@@ -64,7 +64,7 @@ namespace MarkdownTranslator.Tests
             {
                 protected override void Write(DebugOutputRenderer renderer, ContainerBlock obj)
                 {
-                    using (renderer.Scope(obj.GetType().Name))
+                    using (renderer.Scope($"ContainerBlock.{obj.GetType().Name}"))
                     {
                         renderer.WriteChildren(obj);
                     }
@@ -75,7 +75,7 @@ namespace MarkdownTranslator.Tests
             {
                 protected override void Write(DebugOutputRenderer renderer, ContainerInline obj)
                 {
-                    using (renderer.Scope(obj.GetType().Name))
+                    using (renderer.Scope($"ContainerInline.{obj.GetType().Name}"))
                     {
                         renderer.WriteChildren(obj);
                     }
@@ -86,7 +86,7 @@ namespace MarkdownTranslator.Tests
             {
                 protected override void Write(DebugOutputRenderer renderer, LeafBlock obj)
                 {
-                    using (renderer.Scope(obj.GetType().Name))
+                    using (renderer.Scope($"LeafBlock.{obj.GetType().Name}"))
                     {
                         renderer.WriteLeafInline(obj);
                     }
@@ -97,7 +97,7 @@ namespace MarkdownTranslator.Tests
             {
                 protected override void Write(DebugOutputRenderer renderer, LeafInline obj)
                 {
-                    using (renderer.Scope(obj.GetType().Name))
+                    using (renderer.Scope($"LeafInline.{obj.GetType().Name}"))
                     {
                         renderer.WriteLine(obj.GetType().Name);
                     }
@@ -108,7 +108,7 @@ namespace MarkdownTranslator.Tests
             {
                 protected override void Write(DebugOutputRenderer renderer, LiteralInline obj)
                 {
-                    using (renderer.Scope(obj.GetType().Name))
+                    using (renderer.Scope($"LiteralInline.{obj.GetType().Name}"))
                     {
                         renderer.Write(obj.Content);
                     }
