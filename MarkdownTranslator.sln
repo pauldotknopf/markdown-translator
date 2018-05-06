@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{21740103-FD17-4CED-AAAB-4481F3F03E1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkdownTranslator", "src\MarkdownTranslator\MarkdownTranslator.csproj", "{46548F9B-CD02-4513-A2F5-8A70E6207951}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{FA312476-911C-4A24-AAA3-D9EA7FD52B6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkdownTranslator.Tests", "test\MarkdownTranslator.Tests\MarkdownTranslator.Tests.csproj", "{C44C780A-75E8-490A-BA0E-9E4F9E7C722E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{46548F9B-CD02-4513-A2F5-8A70E6207951}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46548F9B-CD02-4513-A2F5-8A70E6207951}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46548F9B-CD02-4513-A2F5-8A70E6207951}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46548F9B-CD02-4513-A2F5-8A70E6207951}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C44C780A-75E8-490A-BA0E-9E4F9E7C722E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C44C780A-75E8-490A-BA0E-9E4F9E7C722E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C44C780A-75E8-490A-BA0E-9E4F9E7C722E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C44C780A-75E8-490A-BA0E-9E4F9E7C722E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{46548F9B-CD02-4513-A2F5-8A70E6207951} = {21740103-FD17-4CED-AAAB-4481F3F03E1B}
+		{C44C780A-75E8-490A-BA0E-9E4F9E7C722E} = {FA312476-911C-4A24-AAA3-D9EA7FD52B6C}
+	EndGlobalSection
+EndGlobal
