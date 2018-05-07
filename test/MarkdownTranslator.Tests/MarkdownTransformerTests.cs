@@ -125,6 +125,20 @@ namespace MarkdownTranslator.Tests
             Assert.Equal("This is a paragraph with ==transforted mark text== and some more.", result);
         }
 
+        [Fact]
+        public void Can_generate_pot()
+        {
+            var markdown = new StringBuilder();
+            markdown.AppendLine("This is a paragraph.");
+            markdown.AppendLine("With mulitple lines.");
+            markdown.AppendLine("");
+            markdown.AppendLine("This is another paragraph.");
+            markdown.Append("With no ending line.");
+
+            var pot = _markdownTransformer.ConvertMarkdownToPot(markdown.ToString(), _markdownPipeline);
+            
+        }
+
         public class FuncMoq
         {
             public virtual string Translate(string input)

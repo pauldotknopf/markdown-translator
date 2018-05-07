@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text;
 using Markdig;
 using Markdig.Extensions.Tables;
 using Markdig.Renderers;
@@ -22,6 +25,52 @@ namespace MarkdownTranslator.Impl
                 renderer.Writer.Write(renderer.TakeNext(renderer.OriginalMarkdown.Length - renderer.LastWrittenIndex));
                 return writer.ToString();
             }
+        }
+
+       
+        public void ConvertMarkdownToPot(string input, MarkdownPipeline pipeline, TextWriter writer)
+        {
+            var translations = new List<string>();
+
+            TransformMarkdown(input, pipeline, value =>
+            {
+                translations.Add(value);
+                return value;
+            });
+
+            writer.WriteLine("#, fuzzy");
+            writer.WriteLine("msgid \"\"");
+            writer.WriteLine("msgstr \"\"");
+            writer.WriteLine("\"Project-Id-Version: PACKAGE VERSION\\n\"");
+            writer.WriteLine("\"Report-Msgid-Bugs-To: \\n\"");
+            writer.WriteLine("\"POT-Creation-Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mmzzz") + "\\n\"");
+            writer.WriteLine("\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"");
+            writer.WriteLine("\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"");
+            writer.WriteLine("\"Language-Team: LANGUAGE <LL@li.org>\\n\"");
+            writer.WriteLine("\"Language: \\n\"");
+            writer.WriteLine("\"MIME-Version: 1.0\\n\"");
+            writer.WriteLine("\"Content-Type: text/plain; charset=CHARSET\\n\"");
+            writer.WriteLine("\"Content-Transfer-Encoding: 8bit\\n\"");
+            writer.WriteLine("\"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\\n\"");
+
+            foreach (var entry in translations.OrderBy(x => x))
+            {
+                writer.WriteLine();
+                writer.WriteLine();
+
+                WriteString(writer, "msgid", entry);
+                
+                WriteString(writer, "msgstr", string.Empty);
+            }
+        }
+
+        private static void WriteString(TextWriter writer, string type, string value)
+        {
+            // TODO: support multi-line.
+            // Escape things.
+            value = value.Replace("\n", "\\n");
+            value = value.Replace("\r", "\\r");
+            writer.WriteLine($"{type} \"{value}\"");
         }
 
         class ReplacementRenderer : TextRendererBase<ReplacementRenderer>
