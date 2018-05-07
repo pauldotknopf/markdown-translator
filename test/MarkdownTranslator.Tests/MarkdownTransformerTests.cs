@@ -139,7 +139,7 @@ namespace MarkdownTranslator.Tests
             
         }
 
-        class FuncMoq
+        public class FuncMoq
         {
             public virtual string Translate(string input)
             {
