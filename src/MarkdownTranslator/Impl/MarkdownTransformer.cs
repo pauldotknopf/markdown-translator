@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Markdig;
-using Markdig.Extensions.Tables;
 using Markdig.Renderers;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -38,6 +35,11 @@ namespace MarkdownTranslator.Impl
                 return value;
             });
 
+            CreatePotFile(translations, writer);
+        }
+
+        public void CreatePotFile(List<string> entries, TextWriter writer)
+        {
             writer.WriteLine("#, fuzzy");
             writer.WriteLine("msgid \"\"");
             writer.WriteLine("msgstr \"\"");
@@ -53,13 +55,12 @@ namespace MarkdownTranslator.Impl
             writer.WriteLine("\"Content-Transfer-Encoding: 8bit\\n\"");
             writer.WriteLine("\"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\\n\"");
 
-            foreach (var entry in translations.OrderBy(x => x))
+            foreach (var entry in entries)
             {
                 writer.WriteLine();
                 writer.WriteLine();
 
                 WriteString(writer, "msgid", entry);
-                
                 WriteString(writer, "msgstr", string.Empty);
             }
         }
@@ -88,7 +89,7 @@ namespace MarkdownTranslator.Impl
             // ReSharper disable ArrangeTypeMemberModifiers
             // ReSharper disable InconsistentNaming
             public readonly string OriginalMarkdown;
-            public int LastWrittenIndex = 0;
+            public int LastWrittenIndex;
             // ReSharper restore InconsistentNaming
             // ReSharper restore ArrangeTypeMemberModifiers
 
