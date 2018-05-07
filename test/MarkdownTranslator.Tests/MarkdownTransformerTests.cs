@@ -109,6 +109,22 @@ namespace MarkdownTranslator.Tests
             Assert.Equal(markdown.ToString(), result);
         }
 
+        [Fact]
+        public void Can_translate_marked()
+        {
+            var moc = new Mock<FuncMoq>(MockBehavior.Strict);
+            moc.Setup(x => x.Translate("This is a paragraph with ==marked text== and some more.")).Returns("This is a paragraph with ==transforted mark text== and some more.");
+
+            var result = _markdownTransformer.TransformMarkdown(
+                "This is a paragraph with ==marked text== and some more.",
+                _markdownPipeline,
+                value => moc.Object.Translate(value));
+            
+            moc.Verify(x => x.Translate("This is a paragraph with ==marked text== and some more."), Times.Exactly(1));
+            
+            Assert.Equal("This is a paragraph with ==transforted mark text== and some more.", result);
+        }
+
         public class FuncMoq
         {
             public virtual string Translate(string input)

@@ -1,0 +1,3 @@
+[submodule "build/scripts/buildary"]
+	path = build/scripts/buildary
+	url = https://github.com/pauldotknopf/dotnet-buildary.git

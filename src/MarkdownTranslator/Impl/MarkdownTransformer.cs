@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using Markdig;
+using Markdig.Extensions.Tables;
 using Markdig.Renderers;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -49,7 +50,7 @@ namespace MarkdownTranslator.Impl
                 LastWrittenIndex += length;
                 return result;
             }
-            
+
             class ContainerBlockRenderer : MarkdownObjectRenderer<ReplacementRenderer, ContainerBlock>
             {
                 protected override void Write(ReplacementRenderer renderer, ContainerBlock obj)
