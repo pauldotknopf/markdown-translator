@@ -91,7 +91,7 @@ namespace MarkdownTranslator.Impl
                 
                 protected override void Write(ReplacementRenderer renderer, ContainerInline obj)
                 {
-                    var startIndex = obj.FirstChild.Span.Start;
+                    var startIndex = obj.Span.Start;
                     
                     // Make sure we flush all previous markdown before rendering this inline entry.
                     renderer.Write(renderer.TakeNext(startIndex - renderer.LastWrittenIndex));
