@@ -18,6 +18,22 @@ namespace MarkdownTranslator.Tests
             _markdownTransformer = new MarkdownTransformer();
             _markdownPipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
         }
+        
+        [Fact]
+        public void Can_translate_bold()
+        {
+            var markdown = new StringBuilder();
+            markdown.Append("***Users tab features:***");
+
+            var result = _markdownTransformer.TransformMarkdown(markdown.ToString(),
+                _markdownPipeline,
+                value =>
+                {
+                    return value.Replace("***Users tab features:***", "done");
+                });
+            
+            Assert.Equal("done", result);
+        }
 
         [Fact]
         public void Can_transform_paragraph()
